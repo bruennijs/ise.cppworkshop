@@ -20,16 +20,17 @@ auto fref() -> int&
 
 constexpr int constInt(int n)
 {
-	return n * 5;
+	return n * n;
 }
 
-enum class StringEnum : std::string {
-	S1 = "HelloWorld"
-}
+enum class PotenzEnum : int {
+	I1 = constInt(1),
+  I2 = constInt(2),
+};
 
 enum ConstExprEnum {
 	E1 = constInt(5)
-}
+};
 
 int main() {
   int n1;
@@ -50,4 +51,8 @@ int main() {
   std::cout << typeid(a3).name() << std::endl;
 
   /// keywords exercises
+  PotenzEnum pe = PotenzEnum::I2;
+  std::cout << (int)pe << std::endl;  
+  std::cout << (int)pe << std::endl;  
+
 }
