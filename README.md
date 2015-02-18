@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # A collection of `.gitignore` templates
 
 This is GitHub’s collection of [`.gitignore`][man] file templates.
@@ -77,3 +78,7 @@ by automatically forking the project and prompting to send a pull request too.
 ## License
 
 [MIT](./LICENSE).
+=======
+# ise.cppworkshop
+ise cpp workshop
+>>>>>>> 93772881cac914d4335e5add563c82989be522e5
