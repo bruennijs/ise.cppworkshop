@@ -7,10 +7,11 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <algorithm>
+
 using namespace std;
 
-class Verzeichnis;
-class Datei;
+////////////////////////////////////////////
 
 class Visitor
 {
@@ -18,9 +19,9 @@ public:
 	Visitor() {};
 	~Visitor() {};
 	
-	virtual void visit(Verzeichnis* v) = 0;
+	virtual void visit(class Verzeichnis& v) = 0;
 
-	virtual void visit(Datei* d) = 0;
+	virtual void visit(class Datei& d) = 0;
 };
 
 // Kompositstruktur
@@ -43,7 +44,7 @@ class Verzeichnis :  public Datei  // Komposite
 public:
 	Verzeichnis( const string &n );
 	~Verzeichnis();
-	typedef std::list<Datei *> Dateiliste;
+	typedef std::list<Datei *> 	Dateiliste;
 	Dateiliste liste;	
 
 	void accept(Visitor& visitor) override;
@@ -138,12 +139,19 @@ Verzeichnis::~Verzeichnis()
 
 void Verzeichnis::accept(Visitor& visitor)
 {
-	visitor.visit(this);
+	visitor.visit(*this);
 	for (auto& d : liste)
 		d->accept(visitor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+template<typename T>
+bool IsInstanceOf(const Datei* obj) noexcept {
+	return dynamic_cast< const T* >( obj ) != nullptr;
+}
+
+//////////////////////////
 
 class VisitorPrintFiles : public Visitor
 {
@@ -153,14 +161,14 @@ public:
 
 	VisitorPrintFiles(VisitorPrintFiles&& rv) = delete;
 	
-	void visit(Verzeichnis* v) override
+	void visit(Verzeichnis& v) override
 	{
-		std::cout << "verz:" << v->GibName() << std::endl;	
+		std::cout << "verz:" << v.GibName() << std::endl;	
 	}
 
-	void visit(Datei* d) override
+	void visit(Datei& d) override
 	{
-		std::cout << "datei:" << d->GibName() << std::endl;
+		std::cout << "datei:" << d.GibName() << std::endl;
 	}
 };
 
@@ -172,37 +180,38 @@ public:
 
 	VisitorCountFiles(VisitorCountFiles&& rv) = delete;
 	
-	void visit(Verzeichnis* v) override
+	void visit(Verzeichnis& v) override
 	{
-		std::cout << v->GibName() << ":" << v->liste.size() << std::endl;
+		std::cout << v.GibName() << ":" << v.liste.size() << std::endl;
 	}
 
-	void visit(Datei* d) override
+	void visit(Datei& d) override
 	{
 		std::cout << "visit.datei" << std::endl;
 	}
 };
 
 
-class VisitorRecursiveCountFiles : public Visitor
+class VisitorRecursiveCountVerzeichnisse : public Visitor
 {
 public:
-	VisitorRecursiveCountFiles() {};
-	~VisitorRecursiveCountFiles() {};
+	VisitorRecursiveCountVerzeichnisse() {};
+	~VisitorRecursiveCountVerzeichnisse() {};
 
 	
-	void visit(Verzeichnis* v) override
+	void visit(Verzeichnis& v) override
 	{
-		m_countFiles += v->liste.size();
-		for (auto& d : v->liste)
-		{
-			visit(d);
-		}
+		//m_countFiles += std::count_if(v.liste.begin(), v.liste.end(), [](Datei* d) { return IsInstanceOf<Verzeichnis>(d); });
+		m_countFiles++;
 	}
 
-	void visit(Datei* d) override
+	void visit(Datei& d) override
 	{
 		
+	}
+
+	int getCount() {
+		return m_countFiles;
 	}
 
 private:
@@ -219,12 +228,14 @@ int main( int argc, char *argv[] )
 
 	VisitorPrintFiles v;
 	VisitorCountFiles vcf;
+	VisitorRecursiveCountVerzeichnisse vrcf;
 	Verzeichnis root( verz );
 
 	//root.accept(v);
-	root.accept(vcf);
+	//root.accept(vcf);
+	root.accept(vrcf);
+
+	std::cout << "count of all files=" << vrcf.getCount() << std::endl;
 
 	return 0;
 }
-
-
