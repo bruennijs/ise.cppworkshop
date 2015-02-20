@@ -8,6 +8,17 @@ struct isPointer
 	};
 };
 
+
+// template <typename T>
+// struct isPointer<T>
+// {
+// 	//bool bvalue = true;
+// 	enum : bool 
+// 	{ 
+// 		value = false 
+// 	};
+// };
+
 template <typename T>
 struct isPointer<T*>
 {

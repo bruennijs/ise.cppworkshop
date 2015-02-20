@@ -3,28 +3,21 @@
 #include <mutex>
 #include <time.h>
 #include <atomic>
-
-class NoOperator
-{
-public:
-	NoOperator();
-	~NoOperator();
-
-	/* data */
-};
+#include <condition_variable>
+#include <mutex>
 
 int main() {
 	long n = 0;
 
 	std::mutex m1;
 
-	std::atomic<long> na(n);
+	std::conditional_variable cond;
 
 	auto l1 = [&n, &na, &m1](void) 
 		{ 
 			for (int i=0; i<10000000; i++)
 			{
-				std::lock_guard<std::mutex> lock(m1);
+				std::unique_lock<std::mutex> lock(m1);
 				n -= 1;
 				n += 2;				
 			}
@@ -34,10 +27,8 @@ int main() {
 		{ 
 			for (int i=0; i<10000000; i++)
 			{
-				m1.lock();
 				na -= 1;
 				na += 2;
-				m1.unlock();
 			}
 
 			std::cout << "n=" << (long)n << std::endl; 
