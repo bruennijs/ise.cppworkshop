@@ -155,13 +155,12 @@ public:
 	
 	void visit(Verzeichnis* v) override
 	{
-		for (auto& d : v->liste)
-			visit(d);
+		std::cout << "verz:" << v->GibName() << std::endl;	
 	}
 
 	void visit(Datei* d) override
 	{
-		std::cout << d->GibName() << std::endl;
+		std::cout << "datei:" << d->GibName() << std::endl;
 	}
 };
 
@@ -175,12 +174,12 @@ public:
 	
 	void visit(Verzeichnis* v) override
 	{
-		std::cout << v->GibName() << std::endl;
-		std::cout << v->liste.size() << std::endl;
+		std::cout << v->GibName() << ":" << v->liste.size() << std::endl;
 	}
 
 	void visit(Datei* d) override
 	{
+		std::cout << "visit.datei" << std::endl;
 	}
 };
 
